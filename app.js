@@ -9,8 +9,9 @@ const app = new Koa();
 const router = new Router();
 const rootDir = process.cwd();
 
-const index = require(path.resolve(rootDir, "./server/routes/index"));
+// const index = require(path.resolve(rootDir, "./server/routes/index"));
 const login = require(path.resolve(rootDir, "./server/routes/login"));
+const home = require(path.resolve(rootDir, "./server/routes/home"));
 
 const sendHandle = require(path.resolve(
   rootDir,
@@ -34,8 +35,9 @@ app.use(
 );
 
 // 加载所有子路由
-router.use("/", index.routes());
+// router.use("/", index.routes());
 router.use("/api", login.routes());
+router.use("/api/home", home.routes());
 // 加载路由中间件
 app.use(router.routes()).use(router.allowedMethods());
 

@@ -18,6 +18,15 @@
 <body>
   <div id="app">
     <h2>{{title}}</h2>
+    <div>当前登录用户信息：{{}}</div>
+    <div>
+      banner信息：
+      <ul>
+        <li v-for="(item, index) in bannerList" :key="index">
+          {{item}}
+        </li>
+      </ul>
+    </div>
   </div>
 
   <script type="module">
@@ -26,8 +35,24 @@
     createApp({
       data() {
         return {
-          title: '首页'
+          title: '首页',
+          user: '',
+          bannerList: []
         }
+      },
+      async mounted() {
+        const Authorization = localStorage.getItem("Authorization");
+        const res = await fetch(`${window.location.origin}/api/home/banner`, {
+          method: 'POST',
+          headers: {
+            "Authorization": `Bearer ${Authorization}`
+          }
+        });
+
+        const data = await res.json()
+
+        console.log("res==>", data);
+        this.bannerList = data.data && data.data.banner || [];
       }
     }).mount('#app')
   </script>

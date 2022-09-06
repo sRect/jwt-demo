@@ -10,4 +10,10 @@ db[DB_COllECTION_NAME.user] = new nedb({
   autoload: true, // 自动加载数据库
 });
 
+// 初始化home集合
+db[DB_COllECTION_NAME.home] = new nedb({
+  filename: path.resolve(__dirname, `./${DB_COllECTION_NAME.home}.db`),
+  autoload: true, // 自动加载数据库
+});
+
 module.exports = db;
