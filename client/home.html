@@ -6,6 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>jwt-demo</title>
+  <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+  <script>
+    // VConsole will be exported to `window.VConsole` by default.
+    var vConsole = new window.VConsole();
+  </script>
   <script type="importmap">
     {
       "imports": {
@@ -32,6 +37,37 @@
   <script type="module">
     import { createApp } from 'vue';
 
+    function notifyMe(title, options) {
+      var notification;
+      // 先检查浏览器是否支持
+      if (!window.Notification) {
+        console.log('浏览器不支持通知');
+      } else {
+        // 检查用户曾经是否同意接受通知
+        if (Notification.permission === 'granted') {
+          notification = new Notification(title, options); // 显示通知
+        } else if (Notification.permission === 'default') {
+          // 用户还未选择，可以询问用户是否同意发送通知
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              console.log('用户同意授权');
+              notification = new Notification(title, options); // 显示通知
+            } else if (permission === 'default') {
+              console.warn('用户关闭授权 未刷新页面之前 可以再次请求授权');
+            } else {
+              // denied
+              console.log('用户拒绝授权 不能显示通知');
+            }
+          });
+        } else {
+          // denied 用户拒绝
+          console.log('用户曾经拒绝显示通知');
+        }
+      }
+
+      return notification;
+    }
+
     createApp({
       data() {
         return {
@@ -39,6 +75,24 @@
           user: '',
           bannerList: []
         }
+      },
+      created() {
+        setTimeout(() => {
+          var notification = notifyMe("消息提醒", {
+            body: "你的外卖到了",
+            tag: "waimai",
+            requireInteraction: true,
+            icon: "https://p3-passport.byteimg.com/img/user-avatar/a9069d6d4f2cf475d0002237b4c33723~100x100.awebp",
+            data: {
+              url: "https://www.baidu.com"
+            }
+          });
+
+          notification.onclick = function () {
+            window.open(notification.data.url, '_blank');      // 打开网址
+            notification.close();                              // 并且关闭通知
+          }
+        }, 1500);
       },
       async mounted() {
         const Authorization = localStorage.getItem("Authorization");
