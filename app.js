@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const Koa = require("koa");
 const Router = require("@koa/router");
 const static = require("koa-static");
@@ -21,7 +22,10 @@ const errHandle = require(path.resolve(
   rootDir,
   "./server/middlewares/errHandle"
 ));
-const { SECRET_KEY } = require(path.resolve(rootDir, "./server/config/index"));
+// const { SECRET_KEY } = require(path.resolve(rootDir, "./server/config/index"));
+const RSA_PUBLIC_KEY = fs.readFileSync(
+  path.resolve(rootDir, "./server/config/rsa/rsa_public_key.pem")
+);
 
 app.use(bodyParser());
 app.use(static(path.resolve(rootDir, "./client")));
@@ -29,7 +33,7 @@ app.use(sendHandle());
 app.use(errHandle);
 // https://www.npmjs.com/package/koa-jwt
 app.use(
-  koajwt({ secret: SECRET_KEY }).unless({
+  koajwt({ secret: RSA_PUBLIC_KEY, algorithms: ["RS256"] }).unless({
     path: [/\/api\/login/, /\/api\/register/],
   })
 );

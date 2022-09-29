@@ -1,7 +1,11 @@
+const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const rootDir = process.cwd();
-const { SECRET_KEY } = require(path.resolve(rootDir, "./server/config/index"));
+// const { SECRET_KEY } = require(path.resolve(rootDir, "./server/config/index"));
+const RSA_PRIVATE_KEY = fs.readFileSync(
+  path.resolve(rootDir, "./server/config/rsa/rsa_private_key.pem")
+);
 const { findOne, insert } = require(path.resolve(
   rootDir,
   "./server/models/userModel"
@@ -57,8 +61,8 @@ class UserController {
           user: data.user,
           _id: data._id,
         },
-        SECRET_KEY,
-        { expiresIn: "1h" }
+        RSA_PRIVATE_KEY,
+        { expiresIn: "1h", algorithm: "RS256" }
       );
 
       return ctx.send(token, "登录成功");
